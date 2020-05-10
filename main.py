@@ -16,7 +16,7 @@ dsair2 = DSair2.DSair2(dsair2_port)
 # 主幹制御器読み込み初期化
 mascon = OHC_PC01A.OHC_PC01A()
 
-# 音
+# 音初期化
 sounds = Sound.Sound()
 
 # メインループを0.1秒おきに回すためのunix timeカウンタ
@@ -40,7 +40,7 @@ while True:
         if speed_level > 600:
             speed_level = 600
         
-        dsair2.move_dc(speed_level, mascon.way)
+        dsair2.move(speed_level, mascon.way)
         
         # 0.1秒経過するまで待つ(sleepしないのは、音などの影響を回避するため)
         while (time.time() <= last_counter + 0.1):
@@ -49,10 +49,7 @@ while True:
     
     except:
         # 異常終了・正常終了時に走行などが停止する
-        # 念の為3回送出する
-        dsair2.move_dc(0, 1)
-        dsair2.move_dc(0, 1)
-        dsair2.move_dc(0, 1)
+        dsair2.move(0, 1)
         # 伝搬するまで待つ
         time.sleep(0.5)
         
