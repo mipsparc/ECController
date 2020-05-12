@@ -30,15 +30,15 @@ while True:
         mascon.loadStatus()
         
         # ミュージックホーン
-        sounds.horn(mascon.white)
+        sounds.horn(mascon.yellow)
         
         #仮実装 あとで実車にもとづいた加速度にする
-        speed_level += mascon.accel_knotch * 2
-        speed_level -= mascon.brake_knotch * 2
+        speed_level += mascon.accel_knotch * 1
+        speed_level -= mascon.brake_knotch * 1
         if speed_level < 0:
             speed_level = 0
-        if speed_level > 600:
-            speed_level = 600
+        if speed_level > 1000:
+            speed_level = 1000
         
         dsair2.move(speed_level, mascon.way)
         

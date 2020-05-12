@@ -7,10 +7,13 @@ import time
 
 class DSair2:
     # 動かないぎりぎりの出力
-    BASE_LEVEL = 170
+    BASE_LEVEL = 200
+    
+    MAX_SPEED = 800
     
     # デコーダアドレスは現状固定
-    LOCO_ADDR = 3
+    # 3 はデフォルトアドレス
+    LOCO_ADDR = 49152 + 3
     
     def __init__(self, port):
         self.ser = serial.Serial(port, baudrate=115200, timeout=0.1, write_timeout=0.1, inter_byte_timeout=0.1)
@@ -20,7 +23,8 @@ class DSair2:
 
         self.ser.reset_input_buffer()
         self.send('setPing()')
-        init_response = self.ser.read(50)
+        time.sleep(0.5)
+        init_response = self.ser.read(200)
         print(init_response)
         if (not init_response.decode('ascii').endswith('200 Ok\r\n')):
             print('DSair2を正常に認識できませんでした。終了します')
@@ -30,9 +34,15 @@ class DSair2:
 
         # DCC初期化
         self.send('setPower(1)')
+        time.sleep(0.5)
         poweron_response = self.ser.read(50)
         print(poweron_response)
+        self.ser.reset_input_buffer()
+        
+        self.send('setPower(1)')
         time.sleep(0.5)
+        poweron_response = self.ser.read(50)
+        print(poweron_response)
         self.ser.reset_input_buffer()
 
         print('DSair2 起動完了')
@@ -41,22 +51,29 @@ class DSair2:
         self.last_way = 0
 
     def send(self, value):
+        self.ser.reset_input_buffer()
         print(value)
         self.ser.write(value.encode('ascii') + b'\n')
         self.ser.flush()
+        print(self.ser.read(8))
         
     def move(self, speed_level, way):
         self.move_dcc(speed_level, way)
         
     # 速度や方向などの状態が変わるときのみ命令を出力する
     def move_dcc(self, speed_level, way):
-        out_speed = int(speed_level) + self.BASE_LEVEL
-        if out_speed > 1023:
-            out_speed = 1023
-        if out_speed < 0:
-            out_speed = 0
         # 仮想的な方向 0(切)
         if way == 0:
+            out_speed = 0
+
+        if speed_level > 0:
+            out_speed = int(speed_level) + self.BASE_LEVEL
+        else:
+            out_speed = 0
+        
+        if out_speed > self.MAX_SPEED:
+            out_speed = self.MAX_SPEED
+        if out_speed < 0:
             out_speed = 0
         
         if out_speed != self.last_out_speed:
