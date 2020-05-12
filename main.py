@@ -42,9 +42,9 @@ while True:
         
         dsair2.move(speed_level, mascon.way)
         
-        # 0.1秒経過するまで待つ(sleepしないのは、音などの影響を回避するため)
+        # 0.1秒経過するまで待つ
         while (time.time() <= last_counter + 0.1):
-            pass
+            time.sleep(0.001)
         last_counter = time.time()
     
     except:
