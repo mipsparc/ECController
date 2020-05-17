@@ -24,6 +24,9 @@ last_counter = time.time()
 
 speed_level = 0
 
+# ライトON
+dsair2.toggleLight()
+
 while True:
     try:
         # 主幹制御器

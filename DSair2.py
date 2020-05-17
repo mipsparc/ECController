@@ -7,13 +7,16 @@ import time
 
 class DSair2:
     # 動かないぎりぎりの出力
-    BASE_LEVEL = 200
+    BASE_LEVEL = 80
     
     MAX_SPEED = 800
     
     # デコーダアドレスは現状固定
     # 3 はデフォルトアドレス
     LOCO_ADDR = 49152 + 3
+    
+    # 点灯しているか
+    loco_light = False
     
     def __init__(self, port):
         self.ser = serial.Serial(port, baudrate=115200, timeout=0.1, write_timeout=0.1, inter_byte_timeout=0.1)
@@ -26,7 +29,9 @@ class DSair2:
         time.sleep(0.5)
         init_response = self.ser.read(200)
         print(init_response)
-        if (not init_response.decode('ascii').endswith('200 Ok\r\n')):
+        if (not init_response.decode('ascii').endswith('200 Ok\r\n')
+            and not init_response.decode('ascii').endswith('100 Ready\r\n')
+        ):
             print('DSair2を正常に認識できませんでした。終了します')
             raise ValueError('DSair2認識エラー')
         else:
@@ -59,6 +64,11 @@ class DSair2:
         
     def move(self, speed_level, way):
         self.move_dcc(speed_level, way)
+        
+    def toggleLight(self):
+        self.loco_light = not self.loco_light
+        light_func_num = 0
+        self.send(f'setLocoFunction({self.LOCO_ADDR},{light_func_num},{int(self.loco_light)})')
         
     # 速度や方向などの状態が変わるときのみ命令を出力する
     def move_dcc(self, speed_level, way):
