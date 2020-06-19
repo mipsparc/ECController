@@ -23,9 +23,7 @@ sounds = Sound.Sound()
 last_counter = time.time()
 
 speed_level = 0
-
-# ライトON
-dsair2.toggleLight()
+dsair2.turnOnLight()
 
 while True:
     try:
@@ -36,14 +34,19 @@ while True:
         sounds.horn(mascon.yellow)
         
         #仮実装 あとで実車にもとづいた加速度にする
-        speed_level += mascon.accel_knotch * 1
-        speed_level -= mascon.brake_knotch * 1
+        speed_level += mascon.accel_knotch * 0.07
+        speed_level -= mascon.brake_knotch * 0.1
         if speed_level < 0:
             speed_level = 0
         if speed_level > 1000:
             speed_level = 1000
         
         dsair2.move(speed_level, mascon.way)
+        
+        if mascon.way == 0:
+            dsair2.turnOffLight()
+        else:
+            dsair2.turnOnLight()
         
         # 0.1秒経過するまで待つ
         while (time.time() <= last_counter + 0.1):

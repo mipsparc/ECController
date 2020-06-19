@@ -16,7 +16,9 @@ class DSair2:
     LOCO_ADDR = 49152 + 3
     
     # 点灯しているか
-    loco_light = False
+    last_loco_light = False
+    # ライトファンクション番号
+    LIGHT_FUNC_NUM = 0
     
     def __init__(self, port):
         self.ser = serial.Serial(port, baudrate=115200, timeout=0.1, write_timeout=0.1, inter_byte_timeout=0.1)
@@ -53,7 +55,7 @@ class DSair2:
         print('DSair2 起動完了')
         
         self.last_out_speed = 0
-        self.last_way = 0
+        self.last_way = -1
 
     def send(self, value):
         self.ser.reset_input_buffer()
@@ -65,20 +67,22 @@ class DSair2:
     def move(self, speed_level, way):
         self.move_dcc(speed_level, way)
         
-    def toggleLight(self):
-        self.loco_light = not self.loco_light
-        light_func_num = 0
-        self.send(f'setLocoFunction({self.LOCO_ADDR},{light_func_num},{int(self.loco_light)})')
+    def turnOnLight(self):
+        if not self.last_loco_light:
+            self.last_loco_light = True
+            self.send(f'setLocoFunction({self.LOCO_ADDR},{self.LIGHT_FUNC_NUM},1)')
+        
+    def turnOffLight(self):
+        if self.last_loco_light:
+            self.last_loco_light = False
+            self.send(f'setLocoFunction({self.LOCO_ADDR},{self.LIGHT_FUNC_NUM},0)')
         
     # 速度や方向などの状態が変わるときのみ命令を出力する
     def move_dcc(self, speed_level, way):
-        # 仮想的な方向 0(切)
-        if way == 0:
-            out_speed = 0
-
-        if speed_level > 0:
+        if speed_level > 0 and way != 0:
             out_speed = int(speed_level) + self.BASE_LEVEL
         else:
+            # 仮想的な方向 0(切)
             out_speed = 0
         
         if out_speed > self.MAX_SPEED:
