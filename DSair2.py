@@ -7,7 +7,7 @@ import time
 
 class DSair2:
     # 動かないぎりぎりの出力
-    BASE_LEVEL = 80
+    BASE_LEVEL = 58
     
     MAX_SPEED = 800
     

@@ -34,8 +34,8 @@ while True:
         sounds.horn(mascon.yellow)
         
         #仮実装 あとで実車にもとづいた加速度にする
-        speed_level += mascon.accel_knotch * 0.07
-        speed_level -= mascon.brake_knotch * 0.1
+        speed_level += mascon.accel_knotch * 0.2
+        speed_level -= mascon.brake_knotch * 0.4
         if speed_level < 0:
             speed_level = 0
         if speed_level > 1000:
