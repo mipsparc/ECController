@@ -3,6 +3,7 @@ import time
 import OHC_PC01A
 import DSair2
 import Sound
+import EC
 
 # 電車鉄道模型をリアルに運転するシステム
 # サンイン重工 OHC-PC01Aコントローラ、DesktopStation DSair2が必要
@@ -23,6 +24,7 @@ sounds = Sound.Sound()
 last_counter = time.time()
 
 speed_level = 0
+ec = EC.EC('e531')
 dsair2.turnOnLight()
 
 while True:
@@ -33,13 +35,7 @@ while True:
         # ミュージックホーン
         sounds.horn(mascon.yellow)
         
-        #仮実装 あとで実車にもとづいた加速度にする
-        speed_level += mascon.accel_knotch * 0.2
-        speed_level -= mascon.brake_knotch * 0.4
-        if speed_level < 0:
-            speed_level = 0
-        if speed_level > 1000:
-            speed_level = 1000
+        speed_level = ec.calcSpeed(speed_level, mascon.accel_knotch, mascon.brake_knotch)
         
         dsair2.move(speed_level, mascon.way)
         
@@ -60,3 +56,4 @@ while True:
         time.sleep(0.5)
         
         raise
+
