@@ -14,16 +14,18 @@ class EC:
             raise ValueError
         
     def e531(self, current_speed_level, accel_knotch, brake_knotch):
-        if current_speed_level < 60:
+        if current_speed_level < 80:
+            accel_level = accel_knotch * 0.25
+        elif current_speed_level < 130:
             accel_level = accel_knotch * 0.2
-        elif current_speed_level < 150:
-            accel_level = accel_knotch * 0.15
         elif current_speed_level < 250:
-            accel_level = accel_knotch * 0.1
+            accel_level = accel_knotch * 0.15
         elif current_speed_level < 300:
+            accel_level = accel_knotch * 0.1
+        elif current_speed_level < 350:
             accel_level = accel_knotch * 0.05
         
-        brake_level -= brake_knotch * 0.4
+        brake_level = brake_knotch * 0.4
         speed_level = current_speed_level + accel_level - brake_level
         if speed_level < 0:
             speed_level = 0
