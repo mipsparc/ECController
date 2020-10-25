@@ -51,13 +51,14 @@ class OHC_PC01A:
     # 主幹制御器全体の状態を返す
     def loadStatus(self):
         pygame.event.get()
+        
         accel_knotch, brake_knotch = self.convertPosToAccelBrake([
             self.joy.get_button(6),
             self.joy.get_button(7),
             self.joy.get_button(8),
             self.joy.get_button(9)
         ])
-
+                
         ax = self.joy.get_axis(1)
         if ax < 0:
             way = 2
@@ -69,9 +70,12 @@ class OHC_PC01A:
         self.accel_knotch = accel_knotch
         self.brake_knotch = brake_knotch
         self.way = way
-        self.black = bool(self.joy.get_button(0))
         self.white = bool(self.joy.get_button(1))
         self.yellow =  bool(self.joy.get_button(2))
+        self.zero = bool(self.joy.get_button(0))
+        self.three = bool(self.joy.get_button(3))
+        self.four = bool(self.joy.get_button(4))
+        self.five = bool(self.joy.get_button(5))
 
 if __name__ == '__main__':
     m = OHC_PC01A()

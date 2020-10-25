@@ -1,13 +1,65 @@
 #encoding: utf-8
 
 import pygame
+import time
 
 class Sound:
     def __init__(self):
         pygame.mixer.init(44100, -16, 1, 256)
-        pygame.mixer.music.load('music_horn.wav')
-        pygame.mixer.music.set_volume(1.0)
-
+        self.ding = SoundPlayer(['sound/ding_bell.wav'], 1.0);
+        self.door_phases = {
+            1 : "door opened",
+            2 : "door closing",
+            3:  "door closed",
+            4:  "door opening"
+        }
+        self.door_phase = 1
+        
+    def door(self, button_pressed):
+        if not pygame.mixer.music.get_busy():
+            if self.door_phase == 1 and button_pressed:
+                pygame.mixer.music.load('sound/door_close.wav')
+                pygame.mixer.music.set_volume(1.0)
+                pygame.mixer.music.play()
+                self.door_phase = 3
+            elif self.door_phase == 3 and not button_pressed:
+                pygame.mixer.music.load('sound/door_open.wav')
+                pygame.mixer.music.set_volume(1.0)
+                pygame.mixer.music.play()
+                self.door_phase = 1
+                
+            
     def horn(self, button_pressed):
         if button_pressed and not pygame.mixer.music.get_busy():
+            pygame.mixer.music.load('sound/horn.wav')
+            pygame.mixer.music.set_volume(1.0)
             pygame.mixer.music.play()
+            
+    def music_horn(self, button_pressed):
+        if button_pressed and not pygame.mixer.music.get_busy():
+            pygame.mixer.music.load('sound/music_horn.wav')
+            pygame.mixer.music.set_volume(1.0)
+            pygame.mixer.music.play()
+            
+    def slow_start(self,button_pressed):
+        if button_pressed and not pygame.mixer.music.get_busy():
+            pygame.mixer.music.load('sound/slow.wav')
+            pygame.mixer.music.set_volume(1.0)
+            pygame.mixer.music.play()
+            
+    def ding_bell(self, button_pressed):
+        if button_pressed:
+            self.ding.play()
+
+class SoundPlayer:
+    def __init__(self, paths, duration):
+        self.sound = []
+        self.duration = duration
+        self.last_play = time.time()
+        for path in paths:
+            self.sound.append(pygame.mixer.Sound(path))
+            
+    def play(self, num=0):
+        if self.last_play + self.duration < time.time():
+            self.last_play = time.time()
+            self.sound[num].play()

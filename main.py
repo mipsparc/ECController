@@ -18,7 +18,7 @@ dsair2 = DSair2.DSair2(dsair2_port)
 mascon = OHC_PC01A.OHC_PC01A()
 
 # 音初期化
-sounds = Sound.Sound()
+sound = Sound.Sound()
 
 # メインループを0.1秒おきに回すためのunix timeカウンタ
 last_counter = time.time()
@@ -32,8 +32,20 @@ while True:
         # 主幹制御器
         mascon.loadStatus()
         
+        # ドア
+        sound.door(mascon.zero)
+        
         # ミュージックホーン
-        sounds.horn(mascon.yellow)
+        sound.music_horn(mascon.yellow)
+        
+        # 通常ホーン
+        sound.horn(mascon.three)
+        
+        # 徐行
+        sound.slow_start(mascon.five)
+
+        # チンベル
+        sound.ding_bell(mascon.four)
         
         speed_level = ec.calcSpeed(speed_level, mascon.accel_knotch, mascon.brake_knotch)
         
