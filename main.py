@@ -47,6 +47,9 @@ while True:
         # チンベル
         sound.ding_bell(mascon.four)
         
+        # 非常ブレーキ緩解
+        sound.air_out(mascon.brake_knotch)
+        
         speed_level = ec.calcSpeed(speed_level, mascon.accel_knotch, mascon.brake_knotch)
         
         dsair2.move(speed_level, mascon.way)

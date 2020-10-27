@@ -14,6 +14,8 @@ class Sound:
             4:  "door opening"
         }
         self.door_phase = 1
+        self.air = SoundPlayer(['sound/air_out.wav'], 5.0);
+        self.brake_last_eb = False
         
     def door(self, button_pressed):
         if not pygame.mixer.music.get_busy():
@@ -50,6 +52,13 @@ class Sound:
     def ding_bell(self, button_pressed):
         if button_pressed:
             self.ding.play()
+            
+    def air_out(self, brake_knotch):
+        if brake_knotch == 9 or brake_knotch == 8:
+            self.brake_last_eb = True
+        if brake_knotch < 8 and self.brake_last_eb:
+            self.brake_last_eb = False
+            self.air.play()
 
 class SoundPlayer:
     def __init__(self, paths, duration):
