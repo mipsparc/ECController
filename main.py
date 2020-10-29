@@ -39,13 +39,13 @@ while True:
         sound.music_horn(mascon.yellow)
         
         # 通常ホーン
-        sound.horn(mascon.three)
+        sound.horn(mascon.five)
         
         # 徐行
-        sound.slow_start(mascon.five)
+        sound.slow_start(mascon.four)
 
         # チンベル
-        sound.ding_bell(mascon.four)
+        sound.ding_bell(mascon.three)
         
         # 非常ブレーキ緩解
         sound.air_out(mascon.brake_knotch)
