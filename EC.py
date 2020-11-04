@@ -15,14 +15,14 @@ class EC:
         
     def e531(self, current_speed_level, accel_knotch, brake_knotch):
         if current_speed_level < 80:
-            accel_level = accel_knotch * 0.25
+            accel_level = accel_knotch * 0.4
         elif current_speed_level < 130:
-            accel_level = accel_knotch * 0.2
+            accel_level = accel_knotch * 0.3
         elif current_speed_level < 250:
-            accel_level = accel_knotch * 0.15
+            accel_level = accel_knotch * 0.2
         elif current_speed_level < 300:
             accel_level = accel_knotch * 0.1
-        elif current_speed_level < 350:
+        else:
             accel_level = accel_knotch * 0.05
         
         brake_level = brake_knotch * 0.4
