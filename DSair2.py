@@ -6,14 +6,11 @@ import serial
 import time
 
 class DSair2:
-    # 動かないぎりぎりの出力
-    BASE_LEVEL = 67
-    
     MAX_SPEED = 800
     
     # デコーダアドレスは現状固定
     # 3 はデフォルトアドレス
-    LOCO_ADDR = 49152 + 3
+    LOCO_ADDR = 49152 + 4
     
     # 点灯しているか
     last_loco_light = False
@@ -80,7 +77,7 @@ class DSair2:
     # 速度や方向などの状態が変わるときのみ命令を出力する
     def move_dcc(self, speed_level, way):
         if speed_level > 0 and way != 0:
-            out_speed = int(speed_level) + self.BASE_LEVEL
+            out_speed = int(speed_level)
         else:
             # 仮想的な方向 0(切)
             out_speed = 0
@@ -102,7 +99,7 @@ class DSair2:
     
     # 現在は使用していないが、参考用にとっておく。DC駆動用
     def move_dc(self, speed_level, way):
-        out_speed = int(speed_level) + self.BASE_LEVEL
+        out_speed = int(speed_level)
         if out_speed > 1023:
             out_speed = 1023
         if out_speed < 0:

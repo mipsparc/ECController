@@ -24,7 +24,7 @@ sound = Sound.Sound()
 last_counter = time.time()
 
 speed_level = 0
-ec = EC.EC('e531')
+ec = EC.EC('e655')
 dsair2.turnOnLight()
 
 while True:
