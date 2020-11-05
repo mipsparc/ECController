@@ -16,6 +16,7 @@ class Sound:
         self.door_phase = 1
         self.air = SoundPlayer(['sound/air_out.wav'], 5.0)
         self.brake_last_eb = False
+        self.next_stop = SoundPlayer(['sound/next_stop.wav'], 1.5)
         
     def door(self, button_pressed):
         if not pygame.mixer.music.get_busy():
@@ -58,6 +59,10 @@ class Sound:
         if brake_knotch < 8 and self.brake_last_eb:
             self.brake_last_eb = False
             self.air.play()
+    
+    def stop(self, button_pressed):
+        if button_pressed:
+            self.next_stop.play()
 
 class SoundPlayer:
     def __init__(self, paths, duration=False):

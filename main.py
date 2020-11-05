@@ -50,6 +50,9 @@ while True:
         # 非常ブレーキ緩解
         sound.air_out(mascon.brake_knotch)
         
+        # 次は停車
+        sound.next_stop(mascon.white)
+        
         speed_level = ec.calcSpeed(speed_level, mascon.accel_knotch, mascon.brake_knotch)
         
         dsair2.move(speed_level, mascon.way)
