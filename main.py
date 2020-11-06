@@ -51,7 +51,7 @@ while True:
         sound.air_out(mascon.brake_knotch)
         
         # 次は停車
-        sound.next_stop(mascon.white)
+        sound.stop(mascon.white)
         
         speed_level = ec.calcSpeed(speed_level, mascon.accel_knotch, mascon.brake_knotch)
         

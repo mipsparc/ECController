@@ -19,7 +19,7 @@ class EC:
         
     def e531(self, current_speed_level, accel_knotch, brake_knotch):
         base_level = 67
-        if 0 < current_speed_level < base_level:
+        if 0 <= current_speed_level < base_level:
             speed_level = base_level
         
         if current_speed_level < 80:
@@ -46,10 +46,10 @@ class EC:
     
     def e655(self, current_speed_level, accel_knotch, brake_knotch):
         base_level = 80
-        if 0 < current_speed_level < base_level:
+        if 0 <= current_speed_level < base_level:
             current_speed_level = base_level
             
-        speed_level = current_speed_level + accel_knotch * 0.6 - brake_knotch * 0.8
+        speed_level = current_speed_level + accel_knotch * 0.4 - brake_knotch * 0.6
 
         if speed_level < base_level:
             speed_level = 0

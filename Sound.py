@@ -14,19 +14,19 @@ class Sound:
             4:  "door opening"
         }
         self.door_phase = 1
-        self.air = SoundPlayer(['sound/air_out.wav'], 5.0)
+        self.air = SoundPlayer(['sound/air_out.wav'], 10.0)
         self.brake_last_eb = False
         self.next_stop = SoundPlayer(['sound/next_stop.wav'], 1.5)
         
     def door(self, button_pressed):
         if not pygame.mixer.music.get_busy():
             if self.door_phase == 1 and button_pressed:
-                pygame.mixer.music.load('sound/door_close.wav')
+                pygame.mixer.music.load('sound/door_open.wav')
                 pygame.mixer.music.set_volume(1.0)
                 pygame.mixer.music.play()
                 self.door_phase = 3
             elif self.door_phase == 3 and not button_pressed:
-                pygame.mixer.music.load('sound/door_open.wav')
+                pygame.mixer.music.load('sound/door_close.wav')
                 pygame.mixer.music.set_volume(1.0)
                 pygame.mixer.music.play()
                 self.door_phase = 1
