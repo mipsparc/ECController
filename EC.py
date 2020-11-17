@@ -1,60 +1,75 @@
 #coding: utf8
 
 class EC:
+    CARS = {
+        'e655': {'desc': 'DCCの交直流特急型電車', 'type': 'dcc'},
+        'e233_dc': {'desc': 'アナログの直流通勤型電車', 'type': 'dc'},
+        'de10': {'desc': 'DCCの液体式ディーゼル機関車', 'type': 'dcc'},
+    }
+    
     def __init__(self, ectype):
-        if ectype == "e531":
-            self.ectype = "e531"
-        if ectype == "e655":
-            self.ectype = "e655"
+        # 入力値の検証
+        if ectype in self.CARS:
+            self.ectype = ectype
+            self.dcc = self.CARS[ectype]['type'] == 'dcc'
+        else:
+            raise ValueError
+        
+        self.speed_level = 0
+    
+    def isDcc(self):
+        return self.dcc
+    
+    def getCars(self):
+        return self.CARS
+    
+    def calcSpeed(self, accel_knotch, brake_knotch):
+        if self.ectype == "e655":
+            return self.e655(accel_knotch, brake_knotch)
+        elif self.ectype == 'e233_dc':
+            return self.e233_dc(accel_knotch, brake_knotch)
         else:
             raise ValueError
     
-    def calcSpeed(self, current_speed_level, accel_knotch, brake_knotch):
-        if self.ectype == "e531":
-            return self.e531(current_speed_level, accel_knotch, brake_knotch)
-        if self.ectype == "e655":
-            return self.e655(current_speed_level, accel_knotch, brake_knotch)
-        else:
-            raise ValueError
-        
-    def e531(self, current_speed_level, accel_knotch, brake_knotch):
-        base_level = 67
-        if 0 <= current_speed_level < base_level:
-            speed_level = base_level
-        
-        if current_speed_level < 80:
-            accel_level = accel_knotch * 0.4
-        elif current_speed_level < 130:
-            accel_level = accel_knotch * 0.3
-        elif current_speed_level < 250:
+    def e655(self, accel_knotch, brake_knotch): 
+        BASE_LEVEL = 80
+
+        accel_level = accel_knotch * 0.4
+        if self.speed_level < 300:
             accel_level = accel_knotch * 0.2
-        elif current_speed_level < 300:
-            accel_level = accel_knotch * 0.1
+        else:
+            accel_level = accel_knotch * 0.05
+        
+        brake_level = brake_knotch * 0.6
+        self.speed_level = self.speed_level + accel_level - brake_level
+        
+        if self.speed_level > 0:
+            return self.speed_level + BASE_LEVEL
+        elif self.speed_level > 800:
+            return 800
+        
+        self.speed_level = 0
+        return 0
+    
+    def e233_dc(self, accel_knotch, brake_knotch):
+        BASE_LEVEL = 180
+
+        if self.speed_level < 70:
+            accel_level = accel_knotch * 0.5
+        elif self.speed_level < 220:
+            accel_level = accel_knotch * 0.3
+        elif self.speed_level < 320:
+            accel_level = accel_knotch * 0.2
         else:
             accel_level = accel_knotch * 0.05
         
         brake_level = brake_knotch * 0.4
-        speed_level = current_speed_level + accel_level - brake_level
+        self.speed_level = self.speed_level + accel_level - brake_level
         
-        if speed_level < base_level:
-            speed_level = 0
-        if speed_level > 400:
-            speed_level = 400
+        if self.speed_level > 0:
+            return self.speed_level + BASE_LEVEL
+        elif self.speed_level > 800:
+            return 800
         
-        return speed_level
-    
-    
-    def e655(self, current_speed_level, accel_knotch, brake_knotch):
-        base_level = 80
-        if 0 <= current_speed_level < base_level:
-            current_speed_level = base_level
-            
-        speed_level = current_speed_level + accel_knotch * 0.4 - brake_knotch * 0.6
-
-        if speed_level < base_level:
-            speed_level = 0
-        if speed_level > 400:
-            speed_level = 400
-       
-        return speed_level
-
+        self.speed_level = 0
+        return 0

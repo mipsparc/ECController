@@ -17,7 +17,9 @@ class DSair2:
     # ライトファンクション番号
     LIGHT_FUNC_NUM = 0
     
-    def __init__(self, port):
+    def __init__(self, port, is_dcc):
+        self.is_dcc = is_dcc
+        
         self.ser = serial.Serial(port, baudrate=115200, timeout=0.1, write_timeout=0.1, inter_byte_timeout=0.1)
         # DSair2を再起動
         self.send('reset()')
@@ -36,18 +38,23 @@ class DSair2:
         else:
             print('DSair2を正常に認識しました。')
 
-        # DCC初期化
-        self.send('setPower(1)')
-        time.sleep(0.5)
-        poweron_response = self.ser.read(50)
-        print(poweron_response)
-        self.ser.reset_input_buffer()
-        
-        self.send('setPower(1)')
-        time.sleep(0.5)
-        poweron_response = self.ser.read(50)
-        print(poweron_response)
-        self.ser.reset_input_buffer()
+        if is_dcc:
+            # DCC初期化
+            self.send('setPower(1)')
+            time.sleep(0.5)
+            poweron_response = self.ser.read(50)
+            print(poweron_response)
+            self.ser.reset_input_buffer()
+            
+            self.send('setPower(1)')
+            time.sleep(0.5)
+            poweron_response = self.ser.read(50)
+            print(poweron_response)
+            self.ser.reset_input_buffer()
+        else:
+            self.send('setPower(0)')
+            time.sleep(0.3)
+            self.ser.reset_input_buffer()
 
         print('DSair2 起動完了')
         
@@ -62,7 +69,10 @@ class DSair2:
         print(self.ser.read(8))
         
     def move(self, speed_level, way):
-        self.move_dcc(speed_level, way)
+        if self.is_dcc:
+            self.move_dcc(speed_level, way)
+        else:
+            self.move_dc(speed_level, way)
         
     def turnOnLight(self):
         if not self.last_loco_light:
@@ -76,6 +86,11 @@ class DSair2:
         
     # 速度や方向などの状態が変わるときのみ命令を出力する
     def move_dcc(self, speed_level, way):
+        if last_way != way and way == 0:
+            dsair2.turnOffLight()
+        elif last_way != way:
+            dsair2.turnOnLight()
+        
         if speed_level > 0 and way != 0:
             out_speed = int(speed_level)
         else:
@@ -97,23 +112,23 @@ class DSair2:
             if way != 0:
                 self.send(f'setLocoDirection({self.LOCO_ADDR},{way})')
     
-    # 現在は使用していないが、参考用にとっておく。DC駆動用
+    # DC駆動用
     def move_dc(self, speed_level, way):
-        out_speed = int(speed_level)
-        if out_speed > 1023:
-            out_speed = 1023
+        if speed_level > 0 and way != 0:
+            out_speed = int(speed_level)
+        else:
+            # 仮想的な方向 0(切)
+            out_speed = 0
+        
+        if out_speed > self.MAX_SPEED:
+            out_speed = self.MAX_SPEED
         if out_speed < 0:
             out_speed = 0
+        
+        if way != self.last_way:
+            self.last_way = way
             
-        command = f'DC({out_speed},{way})\n'
-        self.send(command)
-    
-    # 現在は使用していないが、参考用にとっておく。DC駆動時の初期化用
-    def init_procedure_for_dc(self):
-        time.sleep(0.3)
-        self.send('setPower(0)')
-        time.sleep(0.3)
-        self.send('setPower(0)')
-        time.sleep(0.3)
-        self.ser.reset_input_buffer()
-    
+        if out_speed != self.last_out_speed:
+            self.last_out_speed = out_speed
+            self.send(f'DC({out_speed},{way})\n')
+

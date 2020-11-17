@@ -64,6 +64,8 @@ class OHC_PC01A:
             way = 2
         elif ax == 0.0:
             way = 0
+            accel_knotch = 0
+            brake_knotch = 0
         elif ax > 0:
             way = 1
 
