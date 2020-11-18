@@ -54,6 +54,10 @@ class DSair2:
         else:
             self.send('setPower(0)')
             time.sleep(0.3)
+            self.send('setPower(0)')
+            time.sleep(0.3)
+            self.send('setPower(0)')
+            time.sleep(0.3)
             self.ser.reset_input_buffer()
 
         print('DSair2 起動完了')
