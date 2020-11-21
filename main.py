@@ -32,9 +32,10 @@ else:
     car = input('\n車種IDを入力> ')
 
 ec = EC.EC(car)
+car_data = EC.EC.CARS[car]
 
 #DSair2初期化
-dsair2 = DSair2.DSair2(dsair2_port, ec.isDcc())
+dsair2 = DSair2.DSair2(dsair2_port, ec.isDcc(), ec.getAddr())
 
 print('\n-----------------------\n')
 print('初期化完了\n')

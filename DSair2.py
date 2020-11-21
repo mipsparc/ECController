@@ -8,16 +8,13 @@ import time
 class DSair2:
     MAX_SPEED = 800
     
-    # デコーダアドレスは現状固定
     # 3 はデフォルトアドレス
-    LOCO_ADDR = 49152 + 4
+    LOCO_DEFAULT_ADDR = 49152
     
-    # 点灯しているか
-    last_loco_light = False
     # ライトファンクション番号
     LIGHT_FUNC_NUM = 0
     
-    def __init__(self, port, is_dcc):
+    def __init__(self, port, is_dcc, addr):
         self.is_dcc = is_dcc
         
         self.ser = serial.Serial(port, baudrate=115200, timeout=0.1, write_timeout=0.1, inter_byte_timeout=0.1)
@@ -39,6 +36,8 @@ class DSair2:
             print('DSair2を正常に認識しました。')
 
         if is_dcc:
+            self.loco_addr = self.LOCO_DEFAULT_ADDR + addr
+            self.last_loco_light = False
             # DCC初期化
             self.send('setPower(1)')
             time.sleep(0.5)
@@ -81,19 +80,19 @@ class DSair2:
     def turnOnLight(self):
         if not self.last_loco_light:
             self.last_loco_light = True
-            self.send(f'setLocoFunction({self.LOCO_ADDR},{self.LIGHT_FUNC_NUM},1)')
+            self.send(f'setLocoFunction({self.loco_addr},{self.LIGHT_FUNC_NUM},1)')
         
     def turnOffLight(self):
         if self.last_loco_light:
             self.last_loco_light = False
-            self.send(f'setLocoFunction({self.LOCO_ADDR},{self.LIGHT_FUNC_NUM},0)')
+            self.send(f'setLocoFunction({self.loco_addr},{self.LIGHT_FUNC_NUM},0)')
         
     # 速度や方向などの状態が変わるときのみ命令を出力する
     def move_dcc(self, speed_level, way):
-        if last_way != way and way == 0:
-            dsair2.turnOffLight()
-        elif last_way != way:
-            dsair2.turnOnLight()
+        if self.last_way != way and way == 0:
+            self.turnOffLight()
+        elif self.last_way != way:
+            self.turnOnLight()
         
         if speed_level > 0 and way != 0:
             out_speed = int(speed_level)
@@ -108,13 +107,13 @@ class DSair2:
         
         if out_speed != self.last_out_speed:
             self.last_out_speed = out_speed
-            self.send(f'setLocoSpeed({self.LOCO_ADDR},{out_speed},2)')
+            self.send(f'setLocoSpeed({self.loco_addr},{out_speed},2)')
         
         if way != self.last_way:
             self.last_way = way
             # 仮想的な方向 0(切) は送信しない
             if way != 0:
-                self.send(f'setLocoDirection({self.LOCO_ADDR},{way})')
+                self.send(f'setLocoDirection({self.loco_addr},{way})')
     
     # DC駆動用
     def move_dc(self, speed_level, way):
